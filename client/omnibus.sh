@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# Prototype: Synthesize a rust omnibus library 
+# Prototype: Synthesize a rust omnibus library for linking into a C++ project.
+# Usage: omnibus.sh [path-to-rust-crate ...]
+# Note: `path-to-rust-crate` is the parent directory of a crate's Cargo.toml.
 
 # Canonicalize all of the path arguments relative to this script.
 set -- $(for arg in "$@"; do realpath "$arg"; done)
@@ -18,7 +20,6 @@ printf "\n[lib]\ncrate-type = [\"staticlib\"]\n" >> Cargo.toml
 for dep_manifest_path in "$@"
 do
   echo "Adding $dep_manifest_path"
-  # cargo add --path $dep_manifest_path
   # Add the crate as a local dependency and extract the crate name.
   # Note: cargo writes "Added foo..." to stderr.
   ADDED_CRATE=$(cargo add --path $dep_manifest_path 2> >(awk '{print $2}'))
