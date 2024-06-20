@@ -12,7 +12,7 @@ pushd out/omni
 # Erase the default contents of lib.rs
 : > src/lib.rs
 
-# AFAIK there's no cargo invocation to do this.
+# TODO: Use `cargo rustc -- --crate-type staticlib`?
 printf "\n[lib]\ncrate-type = [\"staticlib\"]\n" >> Cargo.toml
 
 for dep_manifest_path in "$@"

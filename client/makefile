@@ -3,10 +3,10 @@
 # https://github.com/mozilla/cbindgen?tab=readme-ov-file#quick-start
 
 .PHONY: all
-all: client
+all: out/client
 
-client: main.cpp out/omni/target/debug/libomni.a
-	clang++ main.cpp -I out/omni/include -L out/omni/target/debug/ -l omni -o client
+out/client: main.cpp out/omni/target/debug/libomni.a
+	clang++ main.cpp -I out/omni/include -L out/omni/target/debug/ -l omni -o out/client
 
 out/omni/target/debug/libomni.a: ../liba/src/lib.rs ../libb/src/lib.rs out/omni/Cargo.toml
 	cargo build --manifest-path out/omni/Cargo.toml
