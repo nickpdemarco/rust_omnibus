@@ -7,8 +7,12 @@ pub extern fn subtract(left: usize, right: usize) -> usize {
 
 #[no_mangle]
 pub extern fn b_rust_rand() -> usize {
+  let ap = std::thread::available_parallelism()
+    .expect("Unable to get available_parallelism");
+
   let mut rng = rand::thread_rng();
-  rng.gen()
+  let random: usize = rng.gen();
+  random + ap.get()
 }
 
 #[cfg(test)]

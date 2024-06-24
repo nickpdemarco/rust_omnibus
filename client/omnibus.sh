@@ -19,7 +19,7 @@ pushd out/omni
 # If the ambiguity refers to a no_mangle symbol, this will cause a linker error, anyway.
 printf "#[deny(ambiguous_glob_reexports)]\n" >> src/lib.rs
 
-# TODO: Use `cargo rustc -- --crate-type staticlib`?
+# Set the Omnibus's crate-type to staticlib.
 printf "\n[lib]\ncrate-type = [\"staticlib\"]\n" >> Cargo.toml
 
 for dep_manifest_path in "$@"
