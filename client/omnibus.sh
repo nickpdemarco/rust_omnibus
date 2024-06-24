@@ -14,19 +14,24 @@ pushd out/omni
 # Erase the default contents of lib.rs
 : > src/lib.rs
 
+# Set ambiguous_glob_exports to be a hard error.
+# This forces top-level symbols in our omnibus passenger crates to use disambiguating naming conventions.
+# If the ambiguity refers to a no_mangle symbol, this will cause a linker error, anyway.
+printf "#[deny(ambiguous_glob_reexports)]\n" >> src/lib.rs
+
 # TODO: Use `cargo rustc -- --crate-type staticlib`?
 printf "\n[lib]\ncrate-type = [\"staticlib\"]\n" >> Cargo.toml
 
 for dep_manifest_path in "$@"
 do
-  echo "Adding $dep_manifest_path"
-  # Add the crate as a local dependency and extract the crate name.
-  # Note: cargo writes "Added foo..." to stderr.
-  ADDED_CRATE=$(cargo add --path $dep_manifest_path 2> >(awk '{print $2}'))
+  METADATA=$(cargo metadata --no-deps --manifest-path $dep_manifest_path/Cargo.toml)
+  CRATE_NAME=$(printf %s $METADATA | jq --raw-output ".packages.[0].name")
+  echo "Adding $CRATE_NAME @ $dep_manifest_path"
+  cargo add --path $dep_manifest_path
   # Use all public symbols in the added crate, so they aren't stripped.
-  printf "pub use ${ADDED_CRATE}::*;\n" >> src/lib.rs
+  printf "pub use ${CRATE_NAME}::*;\n" >> src/lib.rs
   # Run cbindgen for each crate.
-  cbindgen $dep_manifest_path --output ./include/rust/$ADDED_CRATE/bindings.h
+  cbindgen $dep_manifest_path --output ./include/rust/$CRATE_NAME/bindings.h
 done
 
 cargo build 

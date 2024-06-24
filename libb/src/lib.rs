@@ -1,6 +1,14 @@
+use rand::Rng;
+
 #[no_mangle]
 pub extern fn subtract(left: usize, right: usize) -> usize {
     left - right
+}
+
+#[no_mangle]
+pub extern fn b_rust_rand() -> usize {
+  let mut rng = rand::thread_rng();
+  rng.gen()
 }
 
 #[cfg(test)]
